@@ -15,7 +15,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-![NVIDIA Agent Intelligence Toolkit](./docs/source/_static/aiqtoolkit_banner.png "AIQ toolkit banner image")
+**OVERVIEW**
+
+Developing the AI Travel Agent was quite a journey, especially since I was completely new to the AIQ toolkit. The biggest challenge was simply getting started. The toolkit is powerful but complex, and I had to spend a lot of time understanding how everything fits together. Setting up workflows and configuring agents felt like learning a new language at first. I spent hours poring over documentation, trying to figure out how to properly structure configuration files and make the agents work as intended.
+
+
+**CHALLENGES**
+
+The learning curve was steep, particularly when it came to integrating the Google Flights API with the toolkit. I had to experiment with different configurations, often running into errors that weren’t immediately clear how to fix. Even simple things like parameter naming became tricky. I’d try one approach, get an error, adjust, and try again. It was a lot of trial and error, especially when dealing with the natural language processing part. I had to learn how to properly format prompts and handle the responses from the language model.
+
+What made it even more challenging was that I was building something that needed to be both reliable and user-friendly. Every time I thought something was working, I’d discover new edge cases or ways users might phrase their requests that I hadn’t considered. The documentation was helpful, but there were many moments where I had to figure things out through experimentation and community support. Despite these challenges, the process of learning and problem-solving was incredibly rewarding, and I gained a much deeper understanding of how to work with AI tools and APIs effectively.
+AI Travel Agent is an intelligent flight search assistant powered by NVIDIA's AIQ toolkit and large language models. It enables users to search for flights using natural language queries, making flight booking more intuitive and user-friendly.
+The agent leverages the Google Flights API through SerpAPI to provide real-time flight information, supporting various travel classes and flexible date ranges. Built with a ReAct agent architecture, it can understand complex travel requests, extract relevant information, and return structured flight options.
+Key features include natural language processing for flight queries, support for multiple travel classes, configurable search parameters, and robust error handling. The project is built using Python and can be easily integrated into existing systems through its YAML-based configuration. This implementation demonstrates how to combine LLMs with external APIs to create practical, user-friendly agentic applications that simplify complex tasks like flight booking.
+
+!SETTING UP AND ABOUT THE [NVIDIA Agent Intelligence Toolkit](./docs/source/_static/aiqtoolkit_banner.png "AIQ toolkit banner image")
 
 # NVIDIA Agent Intelligence Toolkit
 
