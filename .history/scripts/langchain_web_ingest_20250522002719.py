@@ -17,8 +17,7 @@ import logging
 import os
 from uuid import uuid4
 
-from langchain.schema import Document
-from langchain.document_loaders.base import BaseLoader
+from langchain_community.document_loaders import BSHTMLLoader
 from langchain_milvus import Milvus
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -26,22 +25,7 @@ from web_utils import cache_html
 from web_utils import get_file_path_from_url
 from web_utils import scrape
 
-from bs4 import BeautifulSoup
-
 logger = logging.getLogger(__name__)
-
-class Utf8BSHTMLLoader(BaseLoader):
-    """Custom loader to read HTML files with utf-8 and parse with BeautifulSoup."""
-
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-
-    def load(self) -> list[Document]:
-        with open(self.file_path, "r", encoding="utf-8") as f:
-            soup = BeautifulSoup(f, "html.parser")
-        # Extract text content (you can customize this to keep HTML if needed)
-        text = soup.get_text(separator="\n", strip=True)
-        return [Document(page_content=text)]
 
 
 async def main(*,
@@ -71,12 +55,21 @@ async def main(*,
         html_data, err = await scrape(urls_to_scrape)
         if err:
             logger.info("Failed to scrape %s", {[f['url'] for f in err]})
-        filenames.extend([cache_html(data, base_path)[1] for data in html_data if html_data])
+        filenames.extend([cache_html(data, base_path)[1] for data in html_data if data])
 
     doc_ids = []
     for filename in filenames:
         logger.info("Parsing %s into documents", filename)
-        loader = Utf8BSHTMLLoader(filename)
+        # Read with utf-8 explicitly, replace errors
+        with open(filename, "r", encoding="utf-8", errors="replace") as f:
+            html = f.read()
+
+        # Write to temp utf8 file
+        temp_filename = filename + ".utf8.html"
+        with open(temp_filename, "w", encoding="utf-8") as f:
+            f.write(html)
+
+        loader = BSHTMLLoader(temp_filename)
         splitter = RecursiveCharacterTextSplitter()
         docs = loader.load()
         docs = splitter.split_documents(docs)
@@ -88,9 +81,11 @@ async def main(*,
         logger.info("Adding %s document chunks to Milvus collection %s", len(docs), collection_name)
         doc_ids.extend(await vector_store.aadd_documents(documents=docs, ids=ids))
         logger.info("Ingested %s document chunks", len(doc_ids))
+
         if clean_cache:
-            logger.info("Removing %s", filename)
+            logger.info("Removing %s and %s", filename, temp_filename)
             os.remove(filename)
+            os.remove(temp_filename)
 
     return doc_ids
 

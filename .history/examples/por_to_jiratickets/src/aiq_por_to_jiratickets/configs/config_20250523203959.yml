@@ -30,7 +30,7 @@ functions:
     timeout: 20.0
     connect: 10.0
     jira_domain: ""
-    jira_project_key: "TEST"
+    jira_project_key: ""
   get_jira_tickets_tool:
     _type: get_jira_tickets_tool
     root_path: "./examples/por_to_jiratickets/data/"

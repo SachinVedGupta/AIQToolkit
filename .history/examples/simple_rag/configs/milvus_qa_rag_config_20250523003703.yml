@@ -1,0 +1,59 @@
+general:
+  use_uvloop: true
+
+retrievers:
+  cuda_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "cuda_docs"
+    embedding_model: milvus_embedder
+    top_k: 10
+  mcp_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "mcp_docs"
+    embedding_model: milvus_embedder
+    top_k: 10
+  qa_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "qa_pairs"
+    embedding_model: milvus_embedder
+    top_k: 5
+
+functions:
+  cuda_retriever_tool:
+    _type: aiq_retriever
+    retriever: cuda_retriever
+    topic: Retrieve documentation for NVIDIA's CUDA library
+  mcp_retriever_tool:
+    _type: aiq_retriever
+    retriever: mcp_retriever
+    topic: Retrieve information about Model Context Protocol (MCP)
+  qa_retriever_tool:
+    _type: aiq_retriever
+    retriever: qa_retriever
+    topic: Retrieve previously stored Q&A (Question and Answer) pairs
+
+llms:
+  nim_llm:
+    _type: nim
+    model_name: meta/llama-3.3-70b-instruct
+    temperature: 0
+    max_tokens: 4096
+    top_p: 1
+
+embedders:
+  milvus_embedder:
+    _type: nim
+    model_name: nvidia/nv-embedqa-e5-v5
+    truncate: "END"
+
+workflow:
+  _type: react_agent
+  tool_names:
+    - cuda_retriever_tool
+    - mcp_retriever_tool
+    - qa_retriever_tool
+  verbose: true
+  llm_name: nim_llm

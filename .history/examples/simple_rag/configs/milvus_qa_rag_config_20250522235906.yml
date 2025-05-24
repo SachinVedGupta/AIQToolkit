@@ -1,0 +1,108 @@
+general:
+  use_uvloop: true
+
+memory:
+  qa_memory:
+    _type: mem0_memory
+
+retrievers:
+  cuda_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "cuda_docs"
+    embedding_model: milvus_embedder
+    top_k: 10
+  mcp_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "mcp_docs"
+    embedding_model: milvus_embedder
+    top_k: 10
+  qa_retriever:
+    _type: milvus_retriever
+    uri: http://localhost:19530
+    collection_name: "qa_pairs"
+    embedding_model: milvus_embedder
+    top_k: 5
+
+functions:
+  cuda_retriever_tool:
+    _type: aiq_retriever
+    retriever: cuda_retriever
+    topic: Retrieve documentation for NVIDIA's CUDA library
+  mcp_retriever_tool:
+    _type: aiq_retriever
+    retriever: mcp_retriever
+    topic: Retrieve information about Model Context Protocol (MCP)
+  qa_retriever_tool:
+    _type: aiq_retriever
+    retriever: qa_retriever
+    topic: Retrieve previously stored Q&A pairs
+  add_qa_memory:
+    _type: add_memory
+    memory: qa_memory
+    description: |
+      Store Q&A pairs in memory for future reference. Use this when a user asks a question and you provide an answer.
+      The input should be a JSON object containing the question, answer, and any relevant metadata.
+  get_qa_memory:
+    _type: get_memory
+    memory: qa_memory
+    description: |
+      Retrieve previously stored Q&A pairs that might be relevant to the current question.
+      Always check this before providing a new answer to see if we have a similar question already answered.
+
+llms:
+  nim_llm:
+    _type: nim
+    model_name: meta/llama-3.3-70b-instruct
+    temperature: 0
+    max_tokens: 4096
+    top_p: 1
+
+embedders:
+  milvus_embedder:
+    _type: nim
+    model_name: nvidia/nv-embedqa-e5-v5
+    truncate: "END"
+
+workflow:
+  _type: react_agent
+  tool_names:
+   - cuda_retriever_tool
+   - mcp_retriever_tool
+   - qa_retriever_tool
+   - add_qa_memory
+   - get_qa_memory
+  verbose: true
+  llm_name: nim_llm
+  system_prompt: |
+    You are a helpful AI assistant that can answer questions about NVIDIA technologies.
+    You have access to documentation and previously stored Q&A pairs.
+    
+    When answering questions:
+    1. First check if there are similar questions in the Q&A memory
+    2. If a similar question exists, use that answer as a reference
+    3. If no similar question exists, search the documentation
+    4. After providing an answer, store the Q&A pair in memory for future reference
+    
+    Always use the following format for storing Q&A pairs:
+    {
+        "conversation": [
+            {
+                "role": "user",
+                "content": "the question"
+            },
+            {
+                "role": "assistant",
+                "content": "the answer"
+            }
+        ],
+        "user_id": "user_12",
+        "metadata": {
+            "key_value_pairs": {
+                "type": "qa_pair",
+                "topic": "relevant topic"
+            }
+        },
+        "memory": "Brief summary of the Q&A pair"
+    } 

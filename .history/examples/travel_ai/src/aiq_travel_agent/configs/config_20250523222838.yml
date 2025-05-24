@@ -1,0 +1,29 @@
+general:
+  use_uvloop: true
+  serp_api_key: "ed32a1a9f2362ccb866a496e7c807774660bd23aff2f2ed3693b6f8fd261202b"
+
+functions:
+  extract_travel_requirements:
+    _type: aiq.tool/extract_travel_requirements
+    llm: travel_llm
+    root_path: "./examples/travel_ai/data/"
+
+  search_flights:
+    _type: aiq.tool/serp_api
+    api_key: "ed32a1a9f2362ccb866a496e7c807774660bd23aff2f2ed3693b6f8fd261202b"
+    llm: travel_llm
+
+llms:
+  travel_llm:
+    _type: nim
+    model_name: meta/llama-3.3-70b-instruct
+    temperature: 0.7
+    max_tokens: 4096
+
+workflow:
+  _type: react_agent
+  llm_name: travel_llm
+  tool_names:
+    - extract_travel_requirements
+    - search_flights
+  verbose: true

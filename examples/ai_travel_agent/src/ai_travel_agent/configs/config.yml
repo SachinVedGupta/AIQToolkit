@@ -1,0 +1,55 @@
+general:
+  use_uvloop: true
+
+functions:
+  google_flights:
+    _type: google_flights
+    currency: "USD"
+    gl: "us"
+    hl: "en"
+    deep_search: false
+    travel_class: 1  # 1=Economy, 2=Premium economy, 3=Business, 4=First
+
+llms:
+  nim_llm:
+    _type: nim
+    model_name: meta/llama-3.3-70b-instruct
+    temperature: 0.5
+
+workflow:
+  _type: react_agent
+  llm_name: nim_llm
+  tool_names: [google_flights]
+  verbose: true
+  retry_parsing_errors: true
+  max_retries: 3
+  additional_instructions: |
+    You are a helpful travel assistant. When users ask about flights, extract the following information from their query:
+    - Departure airport (e.g., JFK, LAX)
+    - Arrival airport (e.g., JFK, LAX)
+    - Departure date (in YYYY-MM-DD format, must be in the future)
+    - Return date (in YYYY-MM-DD format, must be in the future)
+    - Travel class (optional, default is Economy):
+      1 - Economy
+      2 - Premium economy
+      3 - Business
+      4 - First
+    
+    Then, use the google_flights tool with this information in JSON format:
+    {
+      "departure_id": "AIRPORT_CODE",
+      "arrival_id": "AIRPORT_CODE",
+      "outbound_date": "YYYY-MM-DD",
+      "return_date": "YYYY-MM-DD",
+      "travel_class": CLASS_NUMBER
+    }
+    
+    Important notes:
+    1. Always use future dates (at least tomorrow)
+    2. If user asks for business class, use travel_class: 3
+    3. If user asks for first class, use travel_class: 4
+    4. If user asks for premium economy, use travel_class: 2
+    5. If no class is specified, use travel_class: 1 (Economy)
+    6. Use EXACT parameter names as shown above
+    7. Do not use alternative names like "departureAirport" or "class"
+    8. The travel_class must be a number (1, 2, 3, or 4), not a string
