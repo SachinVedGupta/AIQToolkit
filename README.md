@@ -29,7 +29,7 @@ AI Travel Agent is an intelligent flight search assistant powered by NVIDIA's AI
 The agent leverages the Google Flights API through SerpAPI to provide real-time flight information, supporting various travel classes and flexible date ranges. Built with a ReAct agent architecture, it can understand complex travel requests, extract relevant information, and return structured flight options.
 Key features include natural language processing for flight queries, support for multiple travel classes, configurable search parameters, and robust error handling. The project is built using Python and can be easily integrated into existing systems through its YAML-based configuration. This implementation demonstrates how to combine LLMs with external APIs to create practical, user-friendly agentic applications that simplify complex tasks like flight booking.
 
-!SETTING UP AND ABOUT THE [NVIDIA Agent Intelligence Toolkit](./docs/source/_static/aiqtoolkit_banner.png "AIQ toolkit banner image")
+SETTING UP AND TOOLS USED:
 
 # NVIDIA Agent Intelligence Toolkit
 
