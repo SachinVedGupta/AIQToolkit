@@ -14,6 +14,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+**SUMMARY**
+Go to /examples/travel_ai
+
+It can be hard to plan a vacation and flight. You need to search through many different agencies just to find the best and cheapest flight.
+This AI agent is here to help! It helps you plan and book your vacation and flight. It works to understand you, and outputs real flight information according to your input.
+
+
+1. AI Agent extracts relevent travel details (start, destination, date, etc...) from natural language prompt
+2. It correctly invokes the Google Flights API to get the desired flight information
+3. Returns the information back to the user in a clear and concise way
+
 
 **OVERVIEW**
 
